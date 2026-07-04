@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exams Portal - Exam</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="header-bar">
+            <h1>Exams Portal</h1>
+            <div id="timer-box">⌚<span id="timer">00:00</span></div>
+        </div>
+
+        <div id="exam-content">
+            <p class="muted">Loading exam...</p>
+        </div>
+
+        <!-- Hidden camera -->
+         <video id="video" autoplay playsinline style="display:none;"></video>
+         <canvas id="canvas" style="display:none;"></canvas>
+
+         <!-- Surveillance indicator -->
+         <div id="monitor-status" class="monitor-bar">
+            <span id="monitor-icon">🟢</span>
+            <span id="monitor-text">Camera active</span>
+         </div> 
+    </div>
+
+    <script src="/static/camera.js"></script>
+    <script src="/static/exam.js"></script>
+</body>
+</html>

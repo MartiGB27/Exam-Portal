@@ -1,0 +1,136 @@
+[
+  {
+    "id": "exam_001",
+    "title": "Cultura General",
+    "description": "10 preguntes sobre cultura general bàsica.",
+    "questions": [
+      {
+        "id": 1,
+        "text": "Quina és la capital de França?",
+        "options": ["Londres", "Berlin", "París", "Madrid"],
+        "correct": "París"
+      },
+      {
+        "id": 2,
+        "text": "Quants planetes té el sistema solar?",
+        "options": ["7", "8", "9", "10"],
+        "correct": "8"
+      },
+      {
+        "id": 3,
+        "text": "Qui va escriure 'Don Quijote de la Mancha'?",
+        "options": ["Lope de Vega", "Francisco de Quevedo", "Miguel de Cervantes", "Garcilaso de la Vega"],
+        "correct": "Miguel de Cervantes"
+      },
+      {
+        "id": 4,
+        "text": "En quin any va acabar la Segona Guerra Mundial?",
+        "options": ["1943", "1944", "1945", "1946"],
+        "correct": "1945"
+      },
+      {
+        "id": 5,
+        "text": "Quin és l'element químic amb símbol 'O'?",
+        "options": ["Or", "Oxigen", "Osmosi", "Oli"],
+        "correct": "Oxigen"
+      },
+      {
+        "id": 6,
+        "text": "Quants continents hi ha a la Terra?",
+        "options": ["5", "6", "7", "8"],
+        "correct": "7"
+      },
+      {
+        "id": 7,
+        "text": "Quin és el riu més llarg del món?",
+        "options": ["Amazones", "Nil", "Yangtsé", "Mississipí"],
+        "correct": "Nil"
+      },
+      {
+        "id": 8,
+        "text": "A quina temperatura bull l'aigua a nivell del mar?",
+        "options": ["90°C", "95°C", "100°C", "105°C"],
+        "correct": "100°C"
+      },
+      {
+        "id": 9,
+        "text": "Quin és el planeta més gran del sistema solar?",
+        "options": ["Saturn", "Neptú", "Júpiter", "Urà"],
+        "correct": "Júpiter"
+      },
+      {
+        "id": 10,
+        "text": "Quantes potes té una aranya?",
+        "options": ["6", "8", "10", "12"],
+        "correct": "8"
+      }
+    ]
+  },
+  {
+    "id": "exam_002",
+    "title": "Matemàtiques Bàsiques",
+    "description": "10 preguntes sobre operacions matemàtiques fonamentals.",
+    "questions": [
+      {
+        "id": 1,
+        "text": "Quant és 15 × 7?",
+        "options": ["95", "100", "105", "110"],
+        "correct": "105"
+      },
+      {
+        "id": 2,
+        "text": "Quina és l'arrel quadrada de 144?",
+        "options": ["10", "11", "12", "13"],
+        "correct": "12"
+      },
+      {
+        "id": 3,
+        "text": "Quant és 250 ÷ 5?",
+        "options": ["45", "50", "55", "60"],
+        "correct": "50"
+      },
+      {
+        "id": 4,
+        "text": "Quin és el resultat de 2³?",
+        "options": ["6", "8", "9", "12"],
+        "correct": "8"
+      },
+      {
+        "id": 5,
+        "text": "Quant és el 25% de 200?",
+        "options": ["25", "40", "50", "75"],
+        "correct": "50"
+      },
+      {
+        "id": 6,
+        "text": "Quants graus té un triangle equilàter en cadascun dels seus angles?",
+        "options": ["45°", "60°", "90°", "120°"],
+        "correct": "60°"
+      },
+      {
+        "id": 7,
+        "text": "Quant és 1001 - 357?",
+        "options": ["644", "648", "654", "664"],
+        "correct": "644"
+      },
+      {
+        "id": 8,
+        "text": "Quin és el mínim comú múltiple de 4 i 6?",
+        "options": ["8", "10", "12", "24"],
+        "correct": "12"
+      },
+      {
+        "id": 9,
+        "text": "Quant és (3 + 5) × 2?",
+        "options": ["11", "13", "16", "18"],
+        "correct": "16"
+      },
+      {
+        "id": 10,
+        "text": "Quina fracció és equivalent a 0,75?",
+        "options": ["1/2", "2/3", "3/4", "4/5"],
+        "correct": "3/4"
+      }
+    ]
+  }
+]

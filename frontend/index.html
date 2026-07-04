@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exams Portal</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+    <!-- LOGIN -->
+     <div id="auth-section" class="container">
+        <h1>Exams portal</h1>
+
+        <div class="card">
+            <div class="tabs">
+                <button class="tab active" onclick="showTab('login')">Sign in</button>
+                <button class="tab" onclick="showTab('register')">Register</button>
+            </div>
+
+            <div id="tab-login">
+                <input type="text" id="login-username" placeholder="Username" />
+                <input type="password" id="login-password" placeholder="Password" />
+                <button class="btn-primary" onclick="login()">Sign in</button>
+            </div>
+
+            <div id="tab-register" style="display:none;">
+                <input type="text" id="reg-username" placeholder="Username" />
+                <input type="password" id="reg-password" placeholder="Password" />
+                <button class="btn-primary" onclick="register()">Create account</button>
+            </div>
+
+            <p id="auth-error" class="error"></p>
+        </div>
+     </div>
+
+     <!-- EXAM LIST -->
+    <div id="exams-section" class="container" style="display:none;">
+        <div class="header-bar">
+            <h1>Exam Portal</h1>
+            <div>
+                <span id="welcome-text"></span>
+                <button class="btn-secondary" onclick="logout()">Sign out</button>
+            </div>
+        </div>
+
+        <h2>Available exams</h2>
+        <div id="exams-list"></div>
+
+        <h2>History</h2>
+        <div id="history-list"></div>
+    </div>
+
+    <script>
+        let token = localStorage.getItem("token");
+        let username = localStorage.getItem("username");
+
+        if(token) showExams();
+
+        function showTab(tab){
+            document.getElementById("tab-login").style.display = tab === "login" ? "block" : "none";
+            document.getElementById("tab-register").style.display = tab === "register" ? "block" : "none";
+            document.querySelectorAll(".tab").forEach((t, i) => {
+                t.classList.toggle("active", (tab === "login" && i === 0) || (tab === "register" && i === 1));
+            });
+        }
+
+        async function login(){
+            const u = document.getElementById("login-username").value;
+            const p = document.getElementById("login-password").value;
+            const res = await fetch(`/api/login`, {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({username: u, password: p})
+            });
+            if(res.ok){
+                const data = await res.json();
+                localStorage.setItem("token", data.token);
+                localStorage.setItem("username", data.username);
+                token = data.token;
+                username = data.username;
+                showExams();
+            } else{
+                const err = await res.json();
+                document.getElementById("auth-error").textContent = err.detail;
+            }
+        }
+
+        async function register(){
+            const u = document.getElementById("reg-username").value;
+            const p = document.getElementById("reg-password").value;
+            const res = await fetch(`/api/register`, {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({username: u, password: p})
+            });
+            if(res.ok){
+                document.getElementById("auth-error").textContent = "Account created";
+                showTab("login");
+            } else{
+                const err = await res.json();
+                document.getElementById("auth-error").textContent = err.detail;
+            }
+        }
+
+        function logout(){
+            localStorage.clear();
+            location.reload();
+        }
+
+        async function showExams() {
+            document.getElementById("auth-section").style.display = "none";
+            document.getElementById("exams-section").style.display = "block";
+            document.getElementById("welcome-text").textContent = `Welcome, ${username}`;
+
+            const res = await fetch(`/api/exams?token=${token}`);
+            const exams = await res.json();
+            const list = document.getElementById("exams-list");
+            list.innerHTML = exams.map(e => `
+                <div class="card exam-card">
+                    <h3>${e.title}</h3>
+                    <p>${e.description}</p>
+                    <button class="btn-primary" onclick="startExam('${e.id}')">Start exam</button>
+                </div>
+            `).join("");
+
+            loadHistory();
+        }
+
+        async function loadHistory() {
+            const res = await fetch(`/api/history?token=${token}`);
+            const history = await res.json();
+            const list = document.getElementById("history-list");
+            if (history.length === 0) {
+                list.innerHTML = "<p class='muted'>You haven't taken any exams yet.</p>";
+                return;
+            }
+            list.innerHTML = history.map(r => `
+                <div class="card history-card">
+                    <span><strong>${r.exam_id}</strong> — ${r.score}/${r.total}</span>
+                    <span class="muted">${r.finished_at.slice(0, 16).replace("T", " ")}</span>
+                    <a href="/static/result.html?result_id=${r.id}&token=${token}" class="btn-secondary">View report</a>
+                </div>
+            `).join("");
+        }
+
+        function startExam(examId) {
+            window.location.href = `/static/exam.html?exam_id=${examId}&token=${token}`;
+        }
+    </script>
+</body>
+</html>

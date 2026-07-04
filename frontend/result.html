@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exams Portal - Results</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="header-bar">
+            <h1>Exams Portal</h1>
+            <a href="/" class="btn-secondary">Back to home</a>
+        </div>
+
+        <!-- SCORE -->
+        <div id="score-section" class="card">
+            <p class="muted">Loading results...</p>
+        </div>
+
+        <!-- CORRECTIONS -->
+        <h2>Question review</h2>
+        <div id="corrections-section"></div>
+
+        <!-- CHEAT REPORT -->
+        <h2>Monitoring report</h2>
+        <div id="report-section" class="card">
+            <p class="muted">Loading report...</p>
+        </div>
+    </div>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const resultId = params.get("result_id");
+        const token = params.get("token");
+
+        // Load result data
+        const stored = sessionStorage.getItem("last_result");
+        if(stored){
+            const data = JSON.parse(stored);
+            renderScore(data);
+            renderCorrections(data.corrections);
+            sessionStorage.removeItem("last_result");
+        } else{
+            document.getElementById("score-section").innerHTML = `
+                <p class="muted">No result data found. Please go back and retake the exam.</p>
+            `;
+        }
+
+        // Load cheat report
+        loadReport();
+
+        function renderScore(data){
+            const pct = Math.round((data.score / data.total) * 100);
+            const grade = pct >= 90 ? "Excellent" : pct >= 70 ? "Good" : pct >= 50 ? "Pass" : "Fail";
+            const gradeClass = pct >= 50 ? "grade-pass" : "grade-fail";
+
+            document.getElementById("score-section").innerHTML = `
+                <div class="score-display">
+                    <div class="score-circle ${gradeClass}">
+                        <span class="score-number">${pct}%</span>
+                    </div>
+                    <div class="score-details">
+                        <h2>${grade}</h2>
+                        <p>You answered <strong>${data.score}</strong> out of <strong>${data.total}</strong> questions correctly.</p>
+                        <p class="muted">Finished at: ${data.finished_at.slice(0, 16).replace("T", " ")}</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderCorrections(corrections){
+            const section = document.getElementById("corrections-section");
+            if(!corrections || corrections.length === 0){
+                section.innerHTML = "<p class='muted'>No correction data available.</p>";
+                return;
+            }
+            section.innerHTML = corrections.map((c, i) => `
+                <div class="card correction-card ${c.is_correct ? 'correct' : 'incorrect'}">
+                    <p class="question-text"><strong>Q${i + 1}.</strong> ${c.text}</p>
+                    <p>Your answer: <span class="${c.is_correct ? 'answer-correct' : 'answer-wrong'}">${c.user_answer ?? "Not answered"}</span></p>
+                    ${!c.is_correct ? `<p>Correct answer: <span class="answer-correct">${c.correct_answer}</span></p>` : ""}
+                </div>
+            `).join("");
+        }
+
+        async function loadReport(){
+            if(!resultId || !token){
+                document.getElementById("report-section").innerHTML = "<p class='muted'>No monitoring data available.</p>";
+                return;
+            }
+
+            const res = await fetch(`/api/results/${resultId}/report?token=${token}`);
+            if(!res.ok){
+                document.getElementById("report-section").innerHTML = "<p class='muted'>Could not load monitoring report.</p>";
+                return;
+            }
+
+            const data = await res.json();
+            const events = data.events;
+            if(events.length === 0){
+                document.getElementById("report-section").innerHTML = `
+                    <div class="report-clean">
+                        <span class="report-icon">✅</span>
+                        <p>No suspicious activity detected during this exam.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const counts = {};
+            events.forEach(e => {
+                counts[e.event_type] = (counts[e.event_type] || 0) + 1;
+            });
+
+            const labels = {
+                "tab_switch": "Tab switch",
+                "window_blur": "Window minimized/switched",
+                "no_face": "Face not detected",
+                "looking_away": "Looking away from screen"
+            };
+
+            document.getElementById("report-section").innerHTML = `
+                <div class="report-warning">
+                    <span class="report-icon">⚠️</span>
+                    <p><strong>${events.length}</strong> suspicious event(s) detected.</p>
+                </div>
+                <div class="report-summary">
+                    ${Object.entries(counts).map(([type, count]) => `
+                        <div class="report-row">
+                            <span>${labels[type] || type}</span>
+                            <span class="badge">${count}</span>
+                        </div>
+                    `).join("")}
+                </div>
+                <h3>Event timeline</h3>
+                <div class="report-timeline">
+                    ${events.map(e => `
+                        <div class="timeline-event">
+                            <span class="timeline-time">${e.timestamp.slice(11, 19)}</span>
+                            <span class="timeline-type">${labels[e.event_type] || e.event_type}</span>
+                            ${e.detail ? `<span class="timeline-detail">${e.detail}</span>` : ""}
+                        </div>
+                    `).join("")}
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>
